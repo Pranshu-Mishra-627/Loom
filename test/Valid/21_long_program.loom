@@ -1,0 +1,13 @@
+def max(a, b) {
+    if (a > b) {
+        return a;
+    }
+    return b;
+}
+x = 15;
+y = 20;
+m = max(x, y);
+while (m > 0) {
+    print(m);
+    m = m - 5;
+}

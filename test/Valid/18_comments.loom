@@ -1,0 +1,3 @@
+// this is a comment
+x = 10; // another comment
+print(x);

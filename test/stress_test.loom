@@ -1,0 +1,21 @@
+@happy
+def test(a,b,c,d,e){
+x=1;
+y=2;
+z=(x+y)*(a+b-c)/5%2;
+if((x<y)and(True or False)){
+print("A");
+}
+elif(not False){
+print("B");
+}
+else{
+print("C");
+}
+while(x<=100){
+x=x+1;
+}
+return add(add(add(1,2),3),4);
+}
+result=test(1,2,3,4,5);
+print(result);

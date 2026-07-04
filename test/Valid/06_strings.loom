@@ -1,0 +1,4 @@
+name = "John";
+city = "New York";
+print(name);
+print(city);

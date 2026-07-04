@@ -1,0 +1,5 @@
+@happy print("yay");
+@sad {
+    print("cry");
+    print("more crying");
+}

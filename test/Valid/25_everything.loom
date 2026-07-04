@@ -1,0 +1,19 @@
+@happy
+def compute(a, b) {
+    result = a * b + (a - b);
+    if (result >= 100) {
+        print("Large");
+    }
+    elif (result >= 50) {
+        print("Medium");
+    }
+    else {
+        print("Small");
+    }
+    while (result > 0) {
+        result = result - 10;
+    }
+    return result;
+}
+x = compute(15, 9);
+print(x);
