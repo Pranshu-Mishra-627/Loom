@@ -161,8 +161,11 @@ def lex_number(text: str, i: int):
 
     if number.endswith("."):
         raise ValueError("Invalid floating-point number")
-
-    return i, Token.TokenType.NUMBER, number
+    
+    if "." in number:
+        return i, Token.TokenType.NUMBER, float(number)
+    
+    return i, Token.TokenType.NUMBER, int(number)
 
 
 def lex_string(text: str, i: int):
