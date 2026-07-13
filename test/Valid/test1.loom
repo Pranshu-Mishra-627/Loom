@@ -2,3 +2,4 @@ xers123 = 10;
 y = x + 5;
 //this is comment
 print(y+5*7123);
+@happy print("hello");

@@ -1,5 +1,5 @@
 from pathlib import Path
-from Lexer import Lexer
+from Lexer.Lexer import Lexer
 
 VALID_DIR = Path("test/Valid")
 INVALID_DIR = Path("test/Invalid")

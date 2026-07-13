@@ -5,6 +5,7 @@ class Parser:
         self.tokens = tokens
         self.current = 0
 
+#----------------helpers----------------------
     def peek(self):
         return self.tokens[self.current]
     
@@ -31,11 +32,12 @@ class Parser:
         else: return False
     
     def consume(self, token_type):
-        consumed = self.advance()
         if not self.check(token_type):
             raise ValueError(f"Expected {token_type}, found {self.peek().value}")
-        return consumed
-    
+        return self.advance()
+#----------------------------------------------------------------
+
+#-----------------Parser modules---------------------------------
     def parse_program(self):
         statements = []
         while(not self.is_at_end()):
@@ -54,8 +56,10 @@ class Parser:
         expression = self.parse_expression()
         self.consume(Token.TokenType.RPAREN)
         self.consume(Token.TokenType.SEMICOLON)
-        return AST.PrintStatement(expression=expression)
-    
+        return AST.PrintStatement(expression)
+
+
+#-------------------Parse_Expression()----------------------------------
     def parse_primary(self):
         if(self.check(Token.TokenType.NUMBER)):
             token = self.consume(Token.TokenType.NUMBER)
@@ -67,12 +71,9 @@ class Parser:
             token = self.consume(Token.TokenType.NAME)
             if(self.check(Token.TokenType.LPAREN)):
                 self.consume(Token.TokenType.LPAREN)
-                expr = self.parse_expression()
-                if not self.match(Token.TokenType.RPAREN):
-                    raise ValueError(f"Expected ')' got {self.peek().type}") 
-                else: 
-                    self.consume(Token.TokenType.RPAREN)
-                    return AST.FunctionCall(token, expr)
+                args = self.parse_function_call() 
+                self.match(Token.TokenType.RPAREN)
+                return AST.FunctionCall(token, args)
             return AST.Variable(token.value)
         elif self.check(Token.TokenType.TRUE):
             self.consume(Token.TokenType.TRUE)
@@ -88,9 +89,7 @@ class Parser:
             expr = self.parse_expression()
             if not self.match(Token.TokenType.RPAREN):
                 raise ValueError(f"'(' was not closed")
-            else: 
-                self.consume(Token.TokenType.RPAREN)
-                return AST.ExpressionStatement(expr)
+            return expr
         else: raise ValueError(f"Expected Expression found {self.peek().type}")
 
     def parse_unary(self):
@@ -99,7 +98,7 @@ class Parser:
             operand = self.parse_unary()
             return AST.UnaryExpression(op, operand)
         elif(self.check(Token.TokenType.NOT)):
-            op = self.consume(Token.TokenType.MINUS)
+            op = self.consume(Token.TokenType.NOT)
             operand = self.parse_unary()
             return AST.UnaryExpression(op, operand)
         else: return self.parse_primary()
@@ -125,6 +124,43 @@ class Parser:
             op = self.advance()
             right = self.parse_term()
             left = AST.BinaryExpression(left, op, right)
-
         return left
+#----------------------------------------------------------------
+    def parse_function_call(self):
+        args = []
+
+        if not self.check(Token.TokenType.RPAREN):
+            args.append(self.parse_expression())
+            while self.match(Token.TokenType.COMMA):
+                args.append(self.parse_expression())
+        
+        return args
+
+    def parse_assignment_statement(self):
+        var = self.consume(Token.TokenType.NAME)
+        expr = self.parse_expression()
+        self.consume(Token.TokenType.SEMICOLON) 
+        return AST.AssignStatement(var.value, expr)
     
+    def parse_return(self):
+        self.consume(Token.TokenType.RETURN)
+        if(self.peek().type == Token.TokenType.SEMICOLON):
+            self.consume(Token.TokenType.SEMICOLON)
+            return
+        expr = self.parse_expression()
+        return AST.ReturnStatement(expr)
+    
+    def parse_func_def(self):
+        self.consume(Token.TokenType.DEF)
+        name = self.consume(Token.TokenType.NAME).value
+        self.consume(Token.TokenType.LPAREN)
+        args = []
+        if(not self.check(Token.TokenType.RPAREN)):
+            args.append(self.consume(Token.TokenType.NAME))
+
+            while(self.match(Token.TokenType.COMMA)):
+                args.append(self.consume(Token.TokenType.NAME).value)
+        self.consume(Token.TokenType.RPAREN)
+        body = self.parse_program()
+        return AST.FunctionDefinition(name, args, body)
+        

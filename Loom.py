@@ -1,4 +1,4 @@
-import Lexer as Lex
+import Lexer.Lexer as Lex
 with open("test/stress_test.loom", "r") as file:
     source = file.read()
 
