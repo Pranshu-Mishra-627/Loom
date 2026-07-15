@@ -9,6 +9,10 @@ class Parser:
     def peek(self):
         return self.tokens[self.current]
     
+    def peek_next(self):
+        if(not self.is_at_end()):
+            return self.tokens[self.current+1]
+        return self.peek()
     def advance(self):
         current_token = self.peek()
         if( not self.is_at_end()): 
@@ -44,11 +48,34 @@ class Parser:
             statement = self.parse_statement()
             statements.append(statement)
         
-        return statements
+        return AST.Program(statements)
         
     def parse_statement(self):
         if(self.check(Token.TokenType.PRINT)):
             return self.parse_print_statement()
+        elif(self.check(Token.TokenType.RETURN)):
+            return self.parse_return()
+        elif(self.check(Token.TokenType.IF)):
+            return self.parse_if()
+        elif(self.check(Token.TokenType.WHILE)):
+            return self.parse_while()
+        elif(self.check(Token.TokenType.DEF)):
+            return self.parse_func_def()
+        elif(self.check(Token.TokenType.LBRACE)):
+            return self.parse_block()
+        elif(self.check(Token.TokenType.EMOTION_TAG)):
+            return self.parse_emotion_tag()
+        elif(self.check(Token.TokenType.NAME)):
+            next = self.peek_next().type
+            if(next == Token.TokenType.ASSIGN):
+                return self.parse_assignment_statement()
+           
+            expr = self.parse_expression()
+            self.consume(Token.TokenType.SEMICOLON)
+            return AST.ExpressionStatement(expr)
+        else: 
+            raise ValueError(f"Expected: print/return/if/while/def/Block/emotion tag/variable/function call\nGot: {self.peek().value} ")
+        
 
     def parse_print_statement(self):
         self.consume(Token.TokenType.PRINT)
@@ -59,7 +86,7 @@ class Parser:
         return AST.PrintStatement(expression)
 
 
-#-------------------Parse_Expression()----------------------------------
+#-------------------parse_arith()----------------------------------
     def parse_primary(self):
         if(self.check(Token.TokenType.NUMBER)):
             token = self.consume(Token.TokenType.NUMBER)
@@ -72,8 +99,8 @@ class Parser:
             if(self.check(Token.TokenType.LPAREN)):
                 self.consume(Token.TokenType.LPAREN)
                 args = self.parse_function_call() 
-                self.match(Token.TokenType.RPAREN)
-                return AST.FunctionCall(token, args)
+                self.consume(Token.TokenType.RPAREN)
+                return AST.FunctionCall(token.value, args)
             return AST.Variable(token.value)
         elif self.check(Token.TokenType.TRUE):
             self.consume(Token.TokenType.TRUE)
@@ -97,8 +124,8 @@ class Parser:
             op = self.consume(Token.TokenType.MINUS)
             operand = self.parse_unary()
             return AST.UnaryExpression(op, operand)
-        elif(self.check(Token.TokenType.NOT)):
-            op = self.consume(Token.TokenType.NOT)
+        elif(self.check(Token.TokenType.PLUS)):
+            op = self.consume(Token.TokenType.PLUS)
             operand = self.parse_unary()
             return AST.UnaryExpression(op, operand)
         else: return self.parse_primary()
@@ -114,7 +141,7 @@ class Parser:
             left = AST.BinaryExpression(left, op, right)
         return left
     
-    def parse_expression(self):
+    def parse_arith(self):
         left = self.parse_term()
 
         while (
@@ -131,23 +158,26 @@ class Parser:
 
         if not self.check(Token.TokenType.RPAREN):
             args.append(self.parse_expression())
+
             while self.match(Token.TokenType.COMMA):
                 args.append(self.parse_expression())
-        
+
         return args
 
     def parse_assignment_statement(self):
         var = self.consume(Token.TokenType.NAME)
+        self.consume(Token.TokenType.ASSIGN)
         expr = self.parse_expression()
-        self.consume(Token.TokenType.SEMICOLON) 
+        self.consume(Token.TokenType.SEMICOLON)
         return AST.AssignStatement(var.value, expr)
     
     def parse_return(self):
         self.consume(Token.TokenType.RETURN)
-        if(self.peek().type == Token.TokenType.SEMICOLON):
+        if self.check(Token.TokenType.SEMICOLON):
             self.consume(Token.TokenType.SEMICOLON)
-            return
+            return AST.ReturnStatement(None)
         expr = self.parse_expression()
+        self.consume(Token.TokenType.SEMICOLON)
         return AST.ReturnStatement(expr)
     
     def parse_func_def(self):
@@ -156,11 +186,99 @@ class Parser:
         self.consume(Token.TokenType.LPAREN)
         args = []
         if(not self.check(Token.TokenType.RPAREN)):
-            args.append(self.consume(Token.TokenType.NAME))
+            args.append(self.consume(Token.TokenType.NAME).value)
 
             while(self.match(Token.TokenType.COMMA)):
                 args.append(self.consume(Token.TokenType.NAME).value)
         self.consume(Token.TokenType.RPAREN)
-        body = self.parse_program()
+        body = self.parse_block()
         return AST.FunctionDefinition(name, args, body)
+    
+    def parse_block(self):
+        self.consume(Token.TokenType.LBRACE)
+        body = []
+        while(not self.check(Token.TokenType.RBRACE) and not self.is_at_end()):
+            body.append(self.parse_statement())
         
+        if(self.is_at_end()): raise ValueError("Expected '}' before end of file")
+        self.consume(Token.TokenType.RBRACE)
+        return AST.BlockStatement(body)
+    
+    def parse_comparison(self):
+        left = self.parse_arith()
+        if(self.check(Token.TokenType.EQ) 
+           or  self.check(Token.TokenType.NE)
+           or  self.check(Token.TokenType.GT)
+           or  self.check(Token.TokenType.LT)
+           or  self.check(Token.TokenType.LE)
+           or  self.check(Token.TokenType.GE)
+           ):
+            op = self.advance()
+            right  = self.parse_arith()
+            left = AST.BinaryExpression(left, op, right)
+
+        return left
+    def parse_not(self):
+        if(self.check(Token.TokenType.NOT)):
+            op = self.advance()
+            left = self.parse_not()
+            return AST.UnaryExpression(op, left)
+        
+        return self.parse_comparison()
+    
+    def parse_and(self):
+        left = self.parse_not()
+        while(self.check(Token.TokenType.AND)):
+            op = self.advance()
+            right = self.parse_not()
+            left = AST.BinaryExpression(left, op, right)        
+        return left
+
+    def parse_or(self):
+        left = self.parse_and()
+        while self.match(Token.TokenType.OR):
+            op = self.previous()
+            right = self.parse_and()
+            left = AST.BinaryExpression(left, op, right)
+        return left
+
+    def parse_expression(self):
+        return self.parse_or()
+
+    # INCOMPLETE FUNCS
+    def parse_if(self):
+        branches = self.parse_branches()
+        if(self.match(Token.TokenType.ELSE)):
+            else_body = self.parse_block()
+            return AST.IfStatement(branches, else_body)
+        return AST.IfStatement(branches)
+        
+    def parse_branches(self):
+        branches = []
+        self.consume(Token.TokenType.IF)
+        self.consume(Token.TokenType.LPAREN)
+        condition = self.parse_expression()
+        self.consume(Token.TokenType.RPAREN)
+        body = self.parse_block()
+        branches.append(AST.Branch(condition, body))
+
+        while(self.match(Token.TokenType.ELIF)):
+            self.consume(Token.TokenType.LPAREN)
+            condition = self.parse_expression()
+            self.consume(Token.TokenType.RPAREN)
+            body = self.parse_block()
+            branches.append(AST.Branch(condition, body))
+        return branches
+
+    def parse_while(self):
+        self.consume(Token.TokenType.WHILE)
+        self.consume(Token.TokenType.LPAREN)
+        condition = self.parse_expression()
+        self.consume(Token.TokenType.RPAREN)
+        block = self.parse_block()
+        return AST.WhileStatement(condition, block)
+    
+    def parse_emotion_tag(self):
+        emo = self.consume(Token.TokenType.EMOTION_TAG)
+        statement_or_block = self.parse_statement()
+        return AST.EmotionStatement(emo, statement_or_block)

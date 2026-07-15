@@ -48,6 +48,10 @@ class IfStatement(Statement):
         self.branches = branches
         self.else_block = else_block
 
+class Branch():
+    def __init__(self, condition, body):
+        self.condition = condition
+        self.body = body
 
 class WhileStatement(Statement):
     def __init__(self, condition, body):
