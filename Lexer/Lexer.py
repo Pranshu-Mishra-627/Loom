@@ -1,9 +1,9 @@
 import Token
-import lex_number
-import lex_string
-import lex_emotion_tag
-import lex_name
-import skip_comment
+from .lex_number import lex_number
+from .lex_string import lex_string
+from .lex_emotion_tag import lex_emotion_tag
+from .lex_name import lex_name
+from .skip_comment import skip_comment
 
 def Lexer(text: str):
     Tokens = []
