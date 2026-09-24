@@ -1,4 +1,7 @@
 import Token
+import Errors
+
+
 def lex_string(text: str, i: int):
     string = ""
     i += 1
@@ -11,4 +14,4 @@ def lex_string(text: str, i: int):
         string += text[i]
         i += 1
 
-    raise ValueError("Unterminated string")
+    raise Errors.LoomLexerError("Unterminated string")

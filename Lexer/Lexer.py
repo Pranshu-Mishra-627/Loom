@@ -1,9 +1,12 @@
 import Token
+import Errors
+
 from .lex_number import lex_number
 from .lex_string import lex_string
-from .lex_emotion_tag import lex_emotion_tag
+from .lex_tag import lex_tag
 from .lex_name import lex_name
 from .skip_comment import skip_comment
+
 
 def Lexer(text: str):
     Tokens = []
@@ -27,7 +30,7 @@ def Lexer(text: str):
             Tokens.append(Token.TokenInfo(token_type, asset))
 
         elif text[i] == "@":
-            i, token_type, asset = lex_emotion_tag(text, i)
+            i, token_type, asset = lex_tag(text, i)
             Tokens.append(Token.TokenInfo(token_type, None, asset))
 
         elif text.startswith("==", i):
@@ -106,7 +109,9 @@ def Lexer(text: str):
             i += 1
 
         else:
-            raise ValueError(f"Unknown character '{text[i]}'")
+            raise Errors.LoomLexerError(
+                f"Unknown character '{text[i]}'"
+            )
 
     Tokens.append(Token.TokenInfo(Token.TokenType.EOF, "EOF"))
     return Tokens

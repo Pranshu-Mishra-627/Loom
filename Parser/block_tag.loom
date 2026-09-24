@@ -1,0 +1,9 @@
+@debug x = 10;
+
+tag();
+
+@debug y = 20;
+
+a = tag();
+
+@debug z = 30;

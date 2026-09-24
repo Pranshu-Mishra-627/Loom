@@ -1,0 +1,6 @@
+def double(x) {
+    y = x * 2;
+    return y;
+}
+
+print(double(5));

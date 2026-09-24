@@ -1,0 +1,9 @@
+def check(x) {
+    if (x > 10) {
+        return 100;
+    }
+    return 200;
+}
+
+print(check(20));
+print(check(5));

@@ -1,4 +1,7 @@
 import Token
+import Errors
+
+
 def lex_number(text: str, i: int):
     number = ""
     dot_count = 0
@@ -11,6 +14,7 @@ def lex_number(text: str, i: int):
         elif text[i] == ".":
             if dot_count == 1:
                 break
+
             dot_count += 1
             number += "."
 
@@ -20,9 +24,9 @@ def lex_number(text: str, i: int):
         i += 1
 
     if number.endswith("."):
-        raise ValueError("Invalid floating-point number")
-    
+        raise Errors.LoomLexerError("Invalid floating-point number")
+
     if "." in number:
         return i, Token.TokenType.NUMBER, float(number)
-    
+
     return i, Token.TokenType.NUMBER, int(number)

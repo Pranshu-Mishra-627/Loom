@@ -1,5 +1,16 @@
+import sys
+import os
 from pathlib import Path
+
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..")
+    )
+)
+
 from Lexer.Lexer import Lexer
+
 
 VALID_DIR = Path("test/Valid")
 INVALID_DIR = Path("test/Invalid")
@@ -22,7 +33,7 @@ def run_valid_tests():
 
             print("PASS")
 
-            # Uncomment these if you want to see every token
+            # see every token?
             # for token in tokens:
             #     print(token)
 

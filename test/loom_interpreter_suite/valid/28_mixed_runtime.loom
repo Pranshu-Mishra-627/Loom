@@ -1,0 +1,21 @@
+x = 0;
+
+def square(n) {
+    return n * n;
+}
+
+def sum_squares(limit) {
+    total = 0;
+    i = 1;
+    while (i <= limit) {
+        total = total + square(i);
+        i = i + 1;
+    }
+    return total;
+}
+
+if (sum_squares(3) == 14) {
+    print("integration works");
+} else {
+    print("integration failed");
+}

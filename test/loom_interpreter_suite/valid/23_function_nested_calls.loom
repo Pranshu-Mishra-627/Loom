@@ -1,0 +1,9 @@
+def add(a, b) {
+    return a + b;
+}
+
+def double(x) {
+    return x * 2;
+}
+
+print(add(double(5), double(3)));

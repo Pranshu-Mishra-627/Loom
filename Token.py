@@ -1,11 +1,12 @@
 from enum import Enum, auto
 from dataclasses import dataclass as DC
 
+
 class TokenType(Enum):
     NAME = auto()
     NUMBER = auto()
     STRING = auto()
-    EMOTION_TAG = auto()
+    TAG = auto()
 
     IF = auto()
     ELIF = auto()
@@ -46,9 +47,9 @@ class TokenType(Enum):
 
     EOF = auto()
 
-@DC 
-class TokenInfo:
-    type:TokenType
-    value: str
-    emotion:str = None
 
+@DC
+class TokenInfo:
+    type: TokenType
+    value: str
+    tag: str = None

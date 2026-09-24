@@ -1,0 +1,8 @@
+x = 7;
+if (x > 10) {
+    print("wrong");
+} elif (x > 5) {
+    print("elif works");
+} else {
+    print("wrong again");
+}

@@ -1,0 +1,7 @@
+x = 10;
+
+def add_global(a) {
+    return a + x;
+}
+
+print(add_global(5));

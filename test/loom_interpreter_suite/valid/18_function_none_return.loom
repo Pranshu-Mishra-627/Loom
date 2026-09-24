@@ -1,0 +1,5 @@
+def no_return() {
+    x = 10;
+}
+
+print(no_return());

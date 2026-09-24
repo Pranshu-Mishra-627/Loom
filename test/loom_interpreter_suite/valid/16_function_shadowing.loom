@@ -1,0 +1,9 @@
+x = 100;
+
+def local_test() {
+    x = 5;
+    return x;
+}
+
+print(local_test());
+print(x);

@@ -32,11 +32,15 @@ class ExpressionStatement(Statement):
         self.expression = expression
 
 
-class EmotionStatement(Statement):
-    def __init__(self, emotion, body):
-        self.emotion = emotion
+class AnnotationStatement(Statement):
+    def __init__(self, tag_name, tag_bodystr, body):
+        self.tag_name = tag_name
+        self.tag_bodystr = tag_bodystr
         self.body = body
 
+class TagStatement(Statement):
+    def __init__(self):
+        pass
 
 class BlockStatement(Statement):
     def __init__(self, statements):
