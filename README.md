@@ -1,11 +1,31 @@
 # Loom
 
-Loom is a small interpreted programming language built in Python as a
-complete language implementation project.
+A small interpreted programming language built from scratch in Python.
+
+**Want to try Loom???**
+
+The latest standalone Windows executable is available in the [`releases/`](./releases/) folder.
+
+**[Download Loom.exe](./releases/Loom.exe)**
+
+No Python installation is required. Run `Loom.exe` to open the REPL, or pass a `.loom` file to execute it directly.
+>
+> ```powershell
+> .\Loom.exe
+> .\Loom.exe program.loom
+> ```
+
+**Current release: v1.0.1**
+
+---
+
+## Overview
+
+Loom is a small interpreted programming language built in Python as a complete language implementation project.
 
 It follows a classic interpreter pipeline:
 
-``` text
+```text
 Loom Source Code
        |
        v
@@ -24,50 +44,47 @@ Loom Source Code
     Program Output
 ```
 
-Loom uses a C-like syntax and supports variables, expressions, control
-flow, functions, recursion, annotations, a REPL, command-line execution,
-and persistent error logging.
+Loom uses a C-like syntax and supports variables, expressions, control flow, functions, recursion, annotations, a REPL, command-line execution, and persistent error logging.
 
 ## Features
 
-### Core language
+### Core Language
 
--   Variables and assignment
--   Arithmetic operators
--   Comparison operators
--   Logical operators
--   Unary operators
--   Strings
--   Booleans
--   `none`
--   `if`, `elif`, and `else`
--   `while` loops
--   Functions
--   Function parameters
--   Return statements
--   Nested functions
--   Recursion
--   Function calls
--   Comments
--   `print()`
+- Variables and assignment
+- Arithmetic operators
+- Comparison operators
+- Logical operators
+- Unary operators
+- Strings
+- Booleans
+- `none`
+- `if`, `elif`, and `else`
+- `while` loops
+- Functions
+- Function parameters
+- Return statements
+- Nested functions
+- Recursion
+- Function calls
+- Comments
+- `print()`
 
-### Annotation system
+### Annotation System
 
 Loom includes an annotation system using `@tag` syntax.
 
 Example:
 
-``` loom
+```loom
 @debug
 x = 10;
 ```
 
-Annotations are represented in the AST as metadata and can be displayed
-when runtime tagging is enabled.
+Annotations are represented in the AST as metadata and can be displayed when runtime tagging is enabled.
 
 The language also provides the `tag()` built-in statement:
 
-``` loom
+```loom
 tag();
 
 @debug
@@ -76,30 +93,29 @@ x = 10;
 
 `tag()` toggles annotation output at runtime.
 
-### Error handling
+### Error Handling
 
 Loom has a dedicated error hierarchy:
 
--   `LoomLexerError`
--   `LoomParseError`
--   `LoomRuntimeError`
+- `LoomLexerError`
+- `LoomParseError`
+- `LoomRuntimeError`
 
 Errors are reported to the user with clear error categories.
 
 Loom also maintains a persistent local error log on Windows at:
 
-``` text
+```text
 %LOCALAPPDATA%\Loom\loom.log
 ```
 
-The log records lexer, parser, runtime, and system/file errors with
-timestamps.
+The log records lexer, parser, runtime, and system/file errors with timestamps.
 
 ### REPL
 
 Loom includes an interactive REPL:
 
-``` text
+```text
 Loom> x = 10
 Loom> print(x)
 10
@@ -107,17 +123,17 @@ Loom> print(x)
 
 The REPL supports:
 
--   Multiline blocks
--   Nested blocks
--   Automatic semicolon insertion
--   Persistent interpreter state during the session
--   `exit` to leave the REPL
+- Multiline blocks
+- Nested blocks
+- Automatic semicolon insertion
+- Persistent interpreter state during the session
+- `exit` to leave the REPL
 
-### Command-line interface
+### Command-Line Interface
 
-Loom can be used directly from the command line.
+Loom can be used directly from the command line:
 
-``` text
+```text
 loom
 loom program.loom
 loom --help
@@ -126,7 +142,7 @@ loom --version
 
 ## Example Loom Program
 
-``` loom
+```loom
 x = 10 + 20 * 3;
 
 if (x > 50) {
@@ -138,13 +154,13 @@ if (x > 50) {
 
 Output:
 
-``` text
+```text
 large
 ```
 
 A function example:
 
-``` loom
+```loom
 def factorial(n) {
     if (n <= 1) {
         return 1;
@@ -158,13 +174,13 @@ print(factorial(5));
 
 Output:
 
-``` text
+```text
 120
 ```
 
 ## Project Structure
 
-``` text
+```text
 Loom/
 |
 ├── AST.py
@@ -213,18 +229,17 @@ Loom/
 
 ### 1. Lexing
 
-The lexer reads the source code and converts it into a sequence of
-tokens.
+The lexer reads the source code and converts it into a sequence of tokens.
 
 For example:
 
-``` loom
+```loom
 x = 10 + 20;
 ```
 
 is broken into tokens representing:
 
-``` text
+```text
 identifier
 assignment
 number
@@ -233,20 +248,17 @@ number
 semicolon
 ```
 
-The lexer is also responsible for recognizing strings, names, numbers,
-comments, and annotation tags.
+The lexer is also responsible for recognizing strings, names, numbers, comments, and annotation tags.
 
 ### 2. Parsing
 
-The parser consumes the token stream and builds an Abstract Syntax Tree
-(AST).
+The parser consumes the token stream and builds an Abstract Syntax Tree (AST).
 
-The AST represents the structure and meaning of the program rather than
-its original text.
+The AST represents the structure and meaning of the program rather than its original text.
 
 For example:
 
-``` loom
+```loom
 x = 10 + 20;
 ```
 
@@ -258,86 +270,83 @@ The tree-walking interpreter executes the AST directly.
 
 It manages:
 
--   Variables
--   Environments and scopes
--   Functions
--   Function calls
--   Return flow
--   Control flow
--   Expressions
--   Runtime errors
--   Annotation output
+- Variables
+- Environments and scopes
+- Functions
+- Function calls
+- Return flow
+- Control flow
+- Expressions
+- Runtime errors
+- Annotation output
 
-Functions capture their surrounding environment, allowing nested
-functions and recursion to work correctly.
+Functions capture their surrounding environment, allowing nested functions and recursion to work correctly.
 
 ## Running Loom
 
-### Option 1: Standalone executable
+### Standalone Executable
 
-A standalone Windows executable is included in the release.
+The standalone Windows executable is available in the `releases/` directory.
 
-``` text
+```text
 Loom.exe
 ```
 
-No Python installation or Loom source files are required to run the
-standalone executable.
+No Python installation or Loom source files are required to run the standalone executable.
 
 Start the REPL:
 
-``` powershell
+```powershell
 Loom.exe
 ```
 
 Run a Loom source file:
 
-``` powershell
+```powershell
 Loom.exe program.loom
 ```
 
 Show help:
 
-``` powershell
+```powershell
 Loom.exe --help
 ```
 
 Show the version:
 
-``` powershell
+```powershell
 Loom.exe --version
 ```
 
-### Option 2: Run from source
+### Run From Source
 
 Python is required when running Loom directly from its source code.
 
 From the project root:
 
-``` powershell
+```powershell
 python CLI\cli.py
 ```
 
 To run a Loom file:
 
-``` powershell
+```powershell
 python CLI\cli.py program.loom
 ```
 
-To run the REPL:
+To run the REPL directly:
 
-``` powershell
+```powershell
 python REPL\repl.py
 ```
 
 ## Testing
 
-Loom was developed with separate testing for the lexer, parser, and
-interpreter.
+Loom was developed with separate testing for the lexer, parser, and interpreter.
 
 The final test suite contains:
 
-``` text
+```text
 39 valid lexer tests
 8 invalid lexer tests
 30 valid parser tests
@@ -348,20 +357,17 @@ The final test suite contains:
 
 This gives a total of:
 
-``` text
+```text
 119 automated tests
 ```
 
 The project also includes stress testing for the lexer and parser.
 
-### Running tests
+### Running Tests
 
-From the project root, run the relevant test modules using Python's
-module execution mode where applicable.
+From the project root:
 
-Example:
-
-``` powershell
+```powershell
 python -m Lexer.test_lexer
 python -m Parser.test_parser
 python -m Interpreter.test_interpreter
@@ -369,47 +375,44 @@ python -m Interpreter.test_interpreter
 
 ## Error Logging
 
-Loom records errors locally without requiring a separate logging
-service.
+Loom records errors locally without requiring a separate logging service.
 
 On Windows, the log file is stored at:
 
-``` text
+```text
 %LOCALAPPDATA%\Loom\loom.log
 ```
 
 For example:
 
-``` text
+```text
 2026-09-24 17:52:03 | LEXER   | File: C:\Loom\Loom\CLI\cli.py | Unknown character '.'
 2026-09-24 17:52:20 | RUNTIME | File: C:\Loom\Loom\bad.loom | Undefined variable or function: y
 ```
 
-The log is append-only during normal operation, so previous errors
-remain available for inspection.
+The log is append-only during normal operation, so previous errors remain available for inspection.
 
 ## Version
 
 Current release:
 
-``` text
+```text
 Loom 1.0.1
 ```
 
 Check the installed version with:
 
-``` powershell
+```powershell
 Loom.exe --version
 ```
 
 ## Design Goals
 
-Loom was designed as a compact but complete interpreted language rather
-than a collection of isolated language features.
+Loom was designed as a compact but complete interpreted language rather than a collection of isolated language features.
 
 The implementation separates the major stages of execution:
 
-``` text
+```text
 Lexing
    |
 Parsing
@@ -419,13 +422,10 @@ AST construction
 Interpretation
 ```
 
-This separation keeps the language implementation modular and makes
-individual components easier to test and extend.
+This separation keeps the language implementation modular and makes individual components easier to test and extend.
 
 ## Status
 
 **Loom v1.0.1 is complete.**
 
-The project includes the language implementation, testing
-infrastructure, REPL, CLI, error handling, persistent logging, and a
-standalone executable release.
+The project includes the language implementation, testing infrastructure, REPL, CLI, error handling, persistent logging, and a standalone executable release.
