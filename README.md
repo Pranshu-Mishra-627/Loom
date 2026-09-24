@@ -15,8 +15,6 @@ No Python installation is required. Run `Loom.exe` to open the REPL, or pass a `
 > .\Loom.exe program.loom
 > ```
 
-**Current release: v1.0.1**
-
 ---
 
 ## Overview
